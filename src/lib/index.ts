@@ -1,5 +1,3 @@
-import {Param} from "./types";
-
-export function add(a: Param, b: Param) {
-    return a + b;
-}
+export {default as DropZone} from './DropZone';
+export {default as useFileInput} from './useFileInput';
+export {default as util} from './util';
