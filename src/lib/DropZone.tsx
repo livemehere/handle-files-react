@@ -1,5 +1,10 @@
-import React, { cloneElement, DetailedReactHTMLElement } from 'react';
-import { convertFilesWithMeta, FileInputOptions, FileWithMeta, validateOptions } from './util';
+import { cloneElement, DetailedReactHTMLElement } from "react";
+import {
+  convertFilesWithMeta,
+  FileInputOptions,
+  FileWithMeta,
+  validateOptions,
+} from "./util";
 
 type Props = {
   children: DetailedReactHTMLElement<any, any>;
@@ -7,7 +12,12 @@ type Props = {
   onError?: (error: Error) => void;
 };
 
-export default function DropZone({ children, onDrop, onError, ...options }: Props & FileInputOptions) {
+export default function DropZone({
+  children,
+  onDrop,
+  onError,
+  ...options
+}: Props & FileInputOptions) {
   return cloneElement(children, {
     onDragOver: (e: React.DragEvent) => {
       e.preventDefault();
