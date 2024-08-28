@@ -154,6 +154,8 @@ interface Props {
     children: React.ReactElement;
     onDrop: (files: FileWithMeta[]) => void;
     onError?: (error: Error) => void;
+    onDragEnter?: (e: React.DragEvent) => void;
+    onDragLeave?: (e: React.DragEvent) => void;
 }
 
 function DropZone(props:Props & FileInputOptions){
