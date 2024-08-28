@@ -1,5 +1,7 @@
 # Handle Files React
 
+**[npm](https://www.npmjs.com/package/handle-files-react)**
+
 ## Description
 
 Easy and Quick way to handle files in React with `<Dropzone/>` and `useFileInput()` hook.
@@ -30,7 +32,7 @@ function App(){
                     const files = await open({
                         multiple: true,
                         maxBytes: convertToBytes(10, "MB"), // 10MB
-                        accept: ".mp4, .png", // navtive input accept attribute
+                        accept: ".mp4, .png", // native input accept attribute
                         maxFiles:5,
                         customValidator: (file) => file.name.includes("Blender")
                     });
@@ -56,6 +58,7 @@ function App(){
 ```jsx
 function App() {
     const [files, setFiles] = useState<FileWithMeta[]>([]);
+    const [refEl, setRefEl] = useState<HTMLDivElement | null>(null);
     return (
         <div>
             <DropZone
@@ -75,7 +78,9 @@ function App() {
             >
                 <div
                     ref={(el) => {
-                        console.log(el);
+                        if(!refEl) {
+                            setRefEl(el); // use ref element with state
+                        }
                     }}
                     style={{
                         width: 500,
