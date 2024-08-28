@@ -178,3 +178,13 @@ fileWithMeta.toUnit("MB", 1); // 10.0MB
 fileWithMeta.toUnit("GB", 2); // 10.00GB
 fileWithMeta.toUnit("TB", 3); // 10.000TB
 ```
+
+## Tips
+
+### Infer the type of the file
+
+`accept` option is used to filter the file type and use the `File.type` property.   
+Here, is the situation where `image.ai` is not an type of `.ai` but `application/postscript`.   
+But you can get actual file type by error.
+
+![type-help.png](docs%2Fimg%2Ftype-help.png)
