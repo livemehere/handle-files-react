@@ -35,17 +35,9 @@ export function getUnitFunc(bytes: number): TGetUnit {
 /**
  * Convert FileList to FileWithMeta[]
  */
-export function convertFilesWithMeta(
-  files: FileList,
-  options: FileInputOptions,
-): FileWithMeta[] {
+export function convertFilesWithMeta(files: FileList): FileWithMeta[] {
   const result: FileWithMeta[] = [];
   for (const file of files) {
-    if (options?.maxBytes && file.size > options.maxBytes) {
-      throw new Error(
-        `File size(${file.size}) exceeds the limit: ${options.maxBytes}`,
-      );
-    }
     result.push({ origin: file, toUnit: getUnitFunc(file.size) });
   }
   return result;
@@ -56,24 +48,24 @@ export function convertFilesWithMeta(
  */
 export function validateOptions(
   files: FileList,
-  options: FileInputOptions,
+  options?: FileInputOptions,
 ): void {
-  if (options.multiple === false && files.length > 1) {
+  if (options?.multiple === false && files.length > 1) {
     throw new Error("Multiple files are not allowed");
   }
 
-  if (options.maxFiles && files.length > options.maxFiles) {
+  if (options?.maxFiles && files.length > options?.maxFiles) {
     throw new Error(
-      `Number of files(${files.length}) exceeds the limit: ${options.maxFiles}`,
+      `Number of files(${files.length}) exceeds the limit: ${options?.maxFiles}`,
     );
   }
 
   for (const file of files) {
-    if (options.customValidator && !options.customValidator(file)) {
+    if (options?.customValidator && !options?.customValidator(file)) {
       throw new Error(`Custom validation failed: ${file.name}`);
     }
 
-    if (options.accept && !verifyAccept(file.type, options.accept)) {
+    if (options?.accept && !verifyAccept(file.type, options.accept)) {
       throw new Error(
         `File type(${file.type}) is not allowed: ${options.accept}`,
       );

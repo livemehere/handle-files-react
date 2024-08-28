@@ -12,13 +12,13 @@ export const units = [
 export type TUnit = (typeof units)[number];
 export type TGetUnit = (unit: TUnit, fixed?: number) => string;
 
-export type FileInputOptions = {
+export interface FileInputOptions {
   multiple?: boolean;
   accept?: string;
   maxBytes?: number;
   maxFiles?: number;
   customValidator?: (file: File) => boolean;
-};
+}
 
 export interface FileWithMeta {
   origin: File;

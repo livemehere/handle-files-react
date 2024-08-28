@@ -1,6 +1,5 @@
-import { DropZone, useFileInput } from "./lib";
-import { convertToBytes, FileWithMeta } from "./lib/util";
 import { useState } from "react";
+import { convertToBytes, DropZone, FileWithMeta, useFileInput } from "./lib";
 
 function App() {
   const { open } = useFileInput();
@@ -12,7 +11,7 @@ function App() {
           try {
             const files = await open({
               multiple: true,
-              limitBytes: convertToBytes(2.2, "MB"), // 10MB
+              maxBytes: convertToBytes(2.2, "MB"), // 10MB
               accept: ".mp4",
             });
             files.forEach((file) => {
@@ -34,10 +33,16 @@ function App() {
           console.log(e);
         }}
         multiple={true}
-        limitBytes={convertToBytes(10, "MB")}
-        accept={".mp4, .ai, application/postscript"}
+        maxBytes={convertToBytes(10, "MB")}
+        maxFiles={113}
+        customValidator={(file) => {
+          return file.name.includes("Blender");
+        }}
       >
         <div
+          ref={(el) => {
+            console.log(el);
+          }}
           style={{
             width: 500,
             height: 500,

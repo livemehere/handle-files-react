@@ -1,12 +1,12 @@
-import { cloneElement, DetailedReactHTMLElement } from "react";
+import { cloneElement } from "react";
 import { convertFilesWithMeta, validateOptions } from "./util";
 import { FileInputOptions, FileWithMeta } from "./types";
 
-type Props = {
-  children: DetailedReactHTMLElement<any, any>;
+interface Props {
+  children: React.ReactElement;
   onDrop: (files: FileWithMeta[]) => void;
   onError?: (error: Error) => void;
-};
+}
 
 export default function DropZone({
   children,
@@ -14,7 +14,7 @@ export default function DropZone({
   onError,
   ...options
 }: Props & FileInputOptions) {
-  return cloneElement(children, {
+  return cloneElement(children as React.DetailedReactHTMLElement<any, any>, {
     onDragOver: (e: React.DragEvent) => {
       e.preventDefault();
     },
@@ -23,10 +23,10 @@ export default function DropZone({
       const files = e.dataTransfer.files;
       try {
         validateOptions(files, options);
-        onDrop(convertFilesWithMeta(files, options));
+        onDrop(convertFilesWithMeta(files));
       } catch (e) {
         if (onError) {
-          onError(e);
+          onError(e as Error);
         }
       }
     },

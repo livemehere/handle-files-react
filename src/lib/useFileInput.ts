@@ -20,8 +20,11 @@ export default function useFileInput() {
       inputEl.onchange = (e) => {
         try {
           const files = (e.target as HTMLInputElement).files;
+          if (!files) {
+            throw new Error("No files selected");
+          }
           validateOptions(files, options);
-          resolve(convertFilesWithMeta(files, options));
+          resolve(convertFilesWithMeta(files));
         } catch (e) {
           reject(e);
         } finally {
