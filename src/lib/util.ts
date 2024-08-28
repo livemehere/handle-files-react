@@ -1,26 +1,10 @@
-export type FileInputOptions = {
-  multiple?: boolean;
-  accept?: string;
-  limitBytes?: number;
-};
-
-export interface FileWithMeta {
-  origin: File;
-  toUnit: TGetUnit;
-}
-export const units = [
-  "B",
-  "KB",
-  "MB",
-  "GB",
-  "TB",
-  "PB",
-  "EB",
-  "ZB",
-  "YB",
-] as const;
-export type TUnit = (typeof units)[number];
-export type TGetUnit = (unit: TUnit, fixed?: number) => string;
+import {
+  FileInputOptions,
+  FileWithMeta,
+  TGetUnit,
+  TUnit,
+  units,
+} from "./types";
 
 /**
  * Set up options for the input element
@@ -57,9 +41,9 @@ export function convertFilesWithMeta(
 ): FileWithMeta[] {
   const result: FileWithMeta[] = [];
   for (const file of files) {
-    if (options?.limitBytes && file.size > options.limitBytes) {
+    if (options?.maxBytes && file.size > options.maxBytes) {
       throw new Error(
-        `File size(${file.size}) exceeds the limit: ${options.limitBytes}`,
+        `File size(${file.size}) exceeds the limit: ${options.maxBytes}`,
       );
     }
     result.push({ origin: file, toUnit: getUnitFunc(file.size) });
@@ -78,16 +62,26 @@ export function validateOptions(
     throw new Error("Multiple files are not allowed");
   }
 
+  if (options.maxFiles && files.length > options.maxFiles) {
+    throw new Error(
+      `Number of files(${files.length}) exceeds the limit: ${options.maxFiles}`,
+    );
+  }
+
   for (const file of files) {
+    if (options.customValidator && !options.customValidator(file)) {
+      throw new Error(`Custom validation failed: ${file.name}`);
+    }
+
     if (options.accept && !verifyAccept(file.type, options.accept)) {
       throw new Error(
         `File type(${file.type}) is not allowed: ${options.accept}`,
       );
     }
 
-    if (options?.limitBytes && file.size > options.limitBytes) {
+    if (options?.maxBytes && file.size > options.maxBytes) {
       throw new Error(
-        `File size(${file.size}bytes) exceeds the limit: ${options.limitBytes}bytes`,
+        `File size(${file.size}bytes) exceeds the limit: ${options.maxBytes}bytes`,
       );
     }
   }

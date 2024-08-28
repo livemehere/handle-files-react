@@ -1,18 +1,19 @@
-import { useEffect, useRef } from 'react';
-import { convertFilesWithMeta, FileInputOptions, FileWithMeta, setUpOptions, validateOptions } from './util';
+import { useEffect, useRef } from "react";
+import { convertFilesWithMeta, setUpOptions, validateOptions } from "./util";
+import { FileInputOptions, FileWithMeta } from "./types";
 
 export default function useFileInput() {
   const ref = useRef<HTMLInputElement>();
 
   useEffect(() => {
-    const inputEl = document.createElement('input');
+    const inputEl = document.createElement("input");
     ref.current = inputEl;
   }, []);
 
   const open = (options?: FileInputOptions) => {
     const inputEl = ref.current;
     if (!inputEl) {
-      throw new Error('input element is not created for useFileInput');
+      throw new Error("input element is not created for useFileInput");
     }
     setUpOptions(inputEl, options);
     return new Promise<FileWithMeta[]>((resolve, reject) => {

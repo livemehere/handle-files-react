@@ -1,10 +1,6 @@
 import { cloneElement, DetailedReactHTMLElement } from "react";
-import {
-  convertFilesWithMeta,
-  FileInputOptions,
-  FileWithMeta,
-  validateOptions,
-} from "./util";
+import { convertFilesWithMeta, validateOptions } from "./util";
+import { FileInputOptions, FileWithMeta } from "./types";
 
 type Props = {
   children: DetailedReactHTMLElement<any, any>;
