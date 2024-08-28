@@ -1,30 +1,10 @@
 import { useState } from "react";
-import { convertToBytes, DropZone, FileWithMeta, useFileInput } from "./lib";
+import { DropZone, FileWithMeta } from "./lib";
 
 function App() {
-  const { open } = useFileInput();
   const [files, setFiles] = useState<FileWithMeta[]>([]);
   return (
     <div>
-      <button
-        onClick={async () => {
-          try {
-            const files = await open({
-              multiple: true,
-              maxBytes: convertToBytes(2.2, "MB"), // 10MB
-              accept: ".mp4",
-            });
-            files.forEach((file) => {
-              console.log(file);
-              console.log(file.toUnit("MB", 2));
-            });
-          } catch (e) {
-            console.log(e);
-          }
-        }}
-      >
-        SELECT
-      </button>
       <DropZone
         onDrop={(files) => {
           setFiles(files);
@@ -32,24 +12,23 @@ function App() {
         onError={(e) => {
           console.log(e);
         }}
-        multiple={true}
-        maxBytes={convertToBytes(10, "MB")}
-        maxFiles={113}
-        customValidator={(file) => {
-          return file.name.includes("Blender");
-        }}
+        accept={".ai"}
       >
         <div
-          ref={(el) => {
-            console.log(el);
-          }}
           style={{
-            width: 500,
+            width: 800,
             height: 500,
-            backgroundColor: "gray",
+            backgroundColor: "#e2e8f033",
+            border: "2px dashed #cbd5e1",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            flexDirection: "column",
+            fontWeight: "bold",
+            fontSize: "2rem",
           }}
         >
-          DROP ZONE
+          Handle Files React
           <ul>
             {files.map((file) => (
               <li key={file.origin.name}>

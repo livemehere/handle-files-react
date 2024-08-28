@@ -1,5 +1,7 @@
 # Handle Files React
 
+![logo.png](docs%2Fimg%2Flogo.png)
+
 **[npm](https://www.npmjs.com/package/handle-files-react)**
 
 ## Description
