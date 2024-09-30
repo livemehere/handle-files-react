@@ -1,6 +1,6 @@
 import { cloneElement } from "react";
-import { convertFilesWithMeta, validateOptions } from "./util";
-import { FileInputOptions, FileWithMeta } from "./types";
+import { convertFilesWithMeta, validateOptions } from "../util";
+import { FileInputOptions, FileWithMeta } from "../types";
 
 interface Props {
   children: React.ReactElement;
@@ -30,11 +30,11 @@ export default function DropZone({
       e.preventDefault();
       onDragLeave?.(e);
     },
-    onDrop: (e: React.DragEvent) => {
+    onDrop: async (e: React.DragEvent) => {
       e.preventDefault();
       const files = e.dataTransfer.files;
       try {
-        validateOptions(files, options);
+        await validateOptions(files, options);
         onDrop(convertFilesWithMeta(files));
       } catch (e) {
         if (onError) {

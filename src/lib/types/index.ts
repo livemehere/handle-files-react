@@ -14,10 +14,10 @@ export type TGetUnit = (unit: TUnit, fixed?: number) => string;
 
 export interface FileInputOptions {
   multiple?: boolean;
-  accept?: string;
+  accept?: string | string[];
   maxBytes?: number;
   maxFiles?: number;
-  customValidator?: (file: File) => boolean;
+  customValidator?: (file: File) => boolean | Promise<boolean>;
 }
 
 export interface FileWithMeta {

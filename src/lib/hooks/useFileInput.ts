@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
-import { convertFilesWithMeta, setUpOptions, validateOptions } from "./util";
-import { FileInputOptions, FileWithMeta } from "./types";
+import { convertFilesWithMeta, setUpOptions, validateOptions } from "../util";
+import { FileInputOptions, FileWithMeta } from "../types";
 
 export default function useFileInput() {
   const ref = useRef<HTMLInputElement>();

@@ -14,7 +14,11 @@ export function setUpOptions(
   options?: FileInputOptions,
 ) {
   inputEl.type = "file";
-  inputEl.accept = options?.accept || "*";
+  inputEl.accept = options?.accept
+    ? Array.isArray(options.accept)
+      ? options?.accept.join(",")
+      : options.accept
+    : "";
   inputEl.multiple = options?.multiple ?? true;
 }
 
@@ -46,10 +50,10 @@ export function convertFilesWithMeta(files: FileList): FileWithMeta[] {
 /**
  * Validate options for each file
  */
-export function validateOptions(
+export async function validateOptions(
   files: FileList,
   options?: FileInputOptions,
-): void {
+): Promise<void> {
   if (options?.multiple === false && files.length > 1) {
     throw new Error("Multiple files are not allowed");
   }
@@ -61,8 +65,15 @@ export function validateOptions(
   }
 
   for (const file of files) {
-    if (options?.customValidator && !options?.customValidator(file)) {
-      throw new Error(`Custom validation failed: ${file.name}`);
+    if (options?.customValidator) {
+      const isValid = options.customValidator(file);
+      if (isValid instanceof Promise) {
+        if (!(await isValid)) {
+          throw new Error(`Custom validation failed: ${file.name}`);
+        }
+      } else if (!isValid) {
+        throw new Error(`Custom validation failed: ${file.name}`);
+      }
     }
 
     if (options?.accept && !verifyAccept(file.type, options.accept)) {
@@ -82,8 +93,10 @@ export function validateOptions(
 /**
  * Verify if the file type is allowed
  */
-export function verifyAccept(type: string, accept: string): boolean {
-  const allowed = accept.split(",").map((x) => x.trim().replace(/\./g, ""));
+export function verifyAccept(type: string, accept: string | string[]): boolean {
+  const allowed = (typeof accept === "string" ? accept.split(",") : accept).map(
+    (x) => x.trim().replace(/\./g, ""),
+  );
   const format = type.split("/")[1];
   return (
     allowed.includes(type) ||
@@ -102,4 +115,25 @@ export function convertToBytes(value: number, unit: TUnit): number {
     size *= 1024;
   }
   return size;
+}
+
+/**
+ * return video, audio file's duration with seconds
+ */
+export async function getFileDuration(file: File) {
+  const audio = new Audio();
+  const objectUrl = URL.createObjectURL(file);
+  audio.src = objectUrl;
+  return new Promise<number>((resolve, reject) => {
+    audio.onloadedmetadata = () => {
+      resolve(audio.duration);
+      URL.revokeObjectURL(objectUrl);
+      audio.remove();
+    };
+    audio.onerror = (e) => {
+      reject(e);
+      URL.revokeObjectURL(objectUrl);
+      audio.remove();
+    };
+  });
 }

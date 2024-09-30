@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { DropZone, FileWithMeta } from "./lib";
+import { DropZone, FileWithMeta, getFileDuration } from "./lib";
 
 function App() {
   const [files, setFiles] = useState<FileWithMeta[]>([]);
+  const [errorMsg, setErrorMsg] = useState<string>();
+
   return (
     <div>
       <DropZone
@@ -10,9 +12,16 @@ function App() {
           setFiles(files);
         }}
         onError={(e) => {
-          console.log(e);
+          setErrorMsg(e.message);
         }}
-        accept={".ai"}
+        accept={["audio/mpeg"]}
+        customValidator={async (file) => {
+          const duration = await getFileDuration(file); // seconds
+          if (duration > 2.5) {
+            throw new Error(`Duration is too long ${duration}`);
+          }
+          return true;
+        }}
       >
         <div
           style={{
@@ -25,19 +34,19 @@ function App() {
             alignItems: "center",
             flexDirection: "column",
             fontWeight: "bold",
-            fontSize: "2rem",
           }}
         >
-          Handle Files React
+          DROP ZONE
           <ul>
             {files.map((file) => (
               <li key={file.origin.name}>
-                {file.origin.name} ({file.toUnit("MB", 1)})
+                {file.origin.name} ({file.toUnit("MB", 3)})
               </li>
             ))}
           </ul>
         </div>
       </DropZone>
+      <div>{errorMsg}</div>
     </div>
   );
 }

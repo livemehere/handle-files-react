@@ -34,7 +34,7 @@ function App(){
                     const files = await open({
                         multiple: true,
                         maxBytes: convertToBytes(10, "MB"), // 10MB
-                        accept: ".mp4, .png", // native input accept attribute
+                        accept: ["image/*", "video/mp4"], // native input accept attribute
                         maxFiles:5,
                         customValidator: (file) => file.name.includes("Blender")
                     });
@@ -72,7 +72,7 @@ function App() {
                 }}
                 multiple={true}
                 maxBytes={convertToBytes(10, "MB")}
-                accept={".mp4, .png"}
+                accept={["image/*"]}
                 maxFiles={5}
                 customValidator={(file) => {
                     return file.name.includes("Blender");
@@ -105,6 +105,79 @@ function App() {
 }
 ```
 
+## `customValidator`
+
+> return `boolean` or `Promise<boolean>` or throw `Error`
+
+If you want to get message `onError` callback, you can throw `Error`. Returning `boolean` or `Promise<boolean>` will get default message.
+
+### 1. Throw Error 
+
+```tsx
+<DropZone
+    onError={(e) => {
+        setErrorMsg(e.message); // e.message is ".wav extension is not allowed"
+    }}
+    accept={["audio/mpeg"]}
+    customValidator={(file) => {
+        if (file.name.includes("wav")) {
+            throw new Error(".wav extension is not allowed");
+        }
+        return true;
+    }}
+/>
+```
+
+### 2. Return boolean
+
+```tsx
+<DropZone
+    onError={(e) => {
+        setErrorMsg(e.message); // `Custom validation failed: ${file.name}`
+    }}
+    maxBytes={convertToBytes(10, "MB")}
+    customValidator={(file) => {
+        if (file.size > convertToBytes(10, "MB")) {
+            return false;
+        }
+        return true;
+    }}
+/>
+```
+
+### 3. Return Promise
+
+```tsx
+<DropZone
+    onError={(e) => {
+      setErrorMsg(e.message); // `timeout error`
+    }}
+    accept={["audio/mpeg"]}
+    customValidator={async (file) => {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      throw new Error("timeout error");
+        return true;
+    }}
+>
+````
+
+## `accept` options
+
+`accept` option is used to filter the file type and use the `File.type` property. (not the file extension)   
+It works like the native input accept attribute. so, it supports `string` or `string[]`.
+
+```ts
+// 1. string[]  
+const files = await open({
+accept: ["image/*", "video/mp4"], // same with <input accept="image/*, video/mp4">
+});
+
+// 2. string
+const files2 = await open({
+    accept: "image/*, video/mp4", // same with <input accept="image/*, video/mp4">
+});
+```
+
 ## API
 
 ### `common`
@@ -124,10 +197,10 @@ const units = [
 
 interface FileInputOptions {
   multiple?: boolean;
-  accept?: string;
+  accept?: string | string[]; // MIME type
   maxBytes?: number;
   maxFiles?: number;
-  customValidator?: (file: File) => boolean;
+  customValidator?: (file: File) => boolean | Promise<boolean>;
 };
 
 interface FileWithMeta {
@@ -163,7 +236,7 @@ function DropZone(props:Props & FileInputOptions){
 }
 ```
 
-## Utils
+## Util funcitons
 
 ### `convertToBytes(value: number, unit: TUnit): number`
 
@@ -181,6 +254,22 @@ convertToBytes(10, "TB"); // 10995116277760
 fileWithMeta.toUnit("MB", 1); // 10.0MB
 fileWithMeta.toUnit("GB", 2); // 10.00GB
 fileWithMeta.toUnit("TB", 3); // 10.000TB
+```
+
+### `getUnitFunc(bytes: number): TGetUnit`
+
+```ts
+const toUnit = getUnitFunc(10485760);
+toUnit("MB", 1); // 10.0MB
+```
+
+### `getFileDuration(file: File):Promise<number>`
+
+Get the duration of the video, audio file.
+
+```ts
+const duration = await getFileDuration(file); // seconds
+console.log(duration); // 10.0
 ```
 
 ## Tips
