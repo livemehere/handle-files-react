@@ -65,17 +65,6 @@ export async function validateOptions(
   }
 
   for (const file of files) {
-    if (options?.customValidator) {
-      const isValid = options.customValidator(file);
-      if (isValid instanceof Promise) {
-        if (!(await isValid)) {
-          throw new Error(`Custom validation failed: ${file.name}`);
-        }
-      } else if (!isValid) {
-        throw new Error(`Custom validation failed: ${file.name}`);
-      }
-    }
-
     if (options?.accept && !verifyAccept(file.type, options.accept)) {
       throw new Error(
         `File type(${file.type}) is not allowed: ${options.accept}`,
@@ -86,6 +75,17 @@ export async function validateOptions(
       throw new Error(
         `File size(${file.size}bytes) exceeds the limit: ${options.maxBytes}bytes`,
       );
+    }
+
+    if (options?.customValidator) {
+      const isValid = options.customValidator(file);
+      if (isValid instanceof Promise) {
+        if (!(await isValid)) {
+          throw new Error(`Custom validation failed: ${file.name}`);
+        }
+      } else if (!isValid) {
+        throw new Error(`Custom validation failed: ${file.name}`);
+      }
     }
   }
 }

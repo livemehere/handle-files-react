@@ -12,6 +12,7 @@ function App() {
           setFiles(files);
         }}
         onError={(e) => {
+          console.log(e);
           setErrorMsg(e.message);
         }}
         accept={["audio/mpeg"]}
