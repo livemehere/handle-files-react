@@ -17,13 +17,13 @@ export default function useFileInput() {
     }
     setUpOptions(inputEl, options);
     return new Promise<FileWithMeta[]>((resolve, reject) => {
-      inputEl.onchange = (e) => {
+      inputEl.onchange = async (e) => {
         try {
           const files = (e.target as HTMLInputElement).files;
           if (!files) {
-            throw new Error("No files selected");
+            return reject("No files selected");
           }
-          validateOptions(files, options);
+          await validateOptions(files, options);
           resolve(convertFilesWithMeta(files));
         } catch (e) {
           reject(e);
